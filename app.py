@@ -3,7 +3,6 @@ import pandas as pd
 import joblib
 import requests
 import re
-import shap
 import numpy as np
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template
@@ -12,9 +11,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Загружаем модель и SHAP
+# Загружаем модель
 model = joblib.load("itog.pkl")
-explainer = shap.Explainer(model)
 
 # Получение года регистрации через первый пост на стене
 def get_registration_year(user_id, vk):
@@ -106,17 +104,6 @@ def analyze_user():
         prediction = model.predict(df_user)[0]
         probabilities = model.predict_proba(df_user)[0]
 
-        shap_values = explainer(df_user)
-
-        feature_importance = np.abs(shap_values.values[0])
-        top_features = np.argsort(-feature_importance)[:3]
-
-        suspicious_criteria = []
-        for i in top_features:
-            feature_name = df_user.columns[i]
-            feature_value = df_user.iloc[0, i]
-            suspicious_criteria.append(f"{feature_name}: {feature_value}")
-
         result = "Real" if prediction == 1 else "Fake"
         fake_prob = round(probabilities[0] * 100, 2)
         real_prob = round(probabilities[1] * 100, 2)
@@ -128,8 +115,7 @@ def analyze_user():
             "photo": user_data["photo"],
             "result": result,
             "fake_prob": fake_prob,
-            "real_prob": real_prob,
-            "suspicious_criteria": suspicious_criteria
+            "real_prob": real_prob
         }
 
         print(f"📊 Анализ завершён: {response}")
@@ -138,4 +124,3 @@ def analyze_user():
     except Exception as e:
         print(f"Ошибка: {e}")
         return jsonify({"error": str(e)}), 500
-
