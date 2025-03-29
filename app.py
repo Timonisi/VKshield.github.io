@@ -5,11 +5,18 @@ import requests
 import re
 import numpy as np
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={
+    r"/*": {
+        "origins": "*",  # Разрешить доступ с любых источников
+        "methods": ["POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Accept"],
+        "max_age": 3600
+    }
+})
 
 # Загружаем модель
 model = joblib.load("itog.pkl")
@@ -71,11 +78,6 @@ def get_user_info(vk, user_id):
         print(f"Ошибка при получении данных: {e}")
         return None
 
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 # Flask маршрут для анализа пользователя
 @app.route('/analyze', methods=['POST'])
 def analyze_user():
@@ -124,3 +126,4 @@ def analyze_user():
     except Exception as e:
         print(f"Ошибка: {e}")
         return jsonify({"error": str(e)}), 500
+
