@@ -91,7 +91,7 @@ def analyze_user():
         print(f"🔍 Получен запрос на анализ пользователя: {user_id}")
 
         # Авторизация в VK API
-        token = "vk1.a.0vXYjEl3M19azV0gpw05FI6Wo0sAsWeADDtaAtqo6tUux5uxALpoqTeX6-3nBIQcGgiG0IIy4s3r3IuY1S_QSQb8YxD4fTgpooucBvqHPKhCZjF-gLPHsRBOLCEQLDQrKinZ60J9ZpViGOVrcpA334jDaR87rr0kYphh97UqLAfc1NSespdFrsa8JPoufdjZYgsV4HyvyrGCAUkeqrXdTA"
+        token = "your_token"
         vk_session = vk_api.VkApi(token=token)
         vk = vk_session.get_api()
 
